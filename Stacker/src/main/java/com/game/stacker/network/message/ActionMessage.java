@@ -1,4 +1,6 @@
-package com.game.stacker.network;
+package com.game.stacker.network.message;
+
+import java.net.Socket;
 
 import com.game.stacker.state.GameState;
 
@@ -33,6 +35,11 @@ public class ActionMessage implements Message {
 	@Override
 	public String toString(){
 		return String.format("ActionMessage = [gamer: %s, clientIdentifier : %s]", gamer, clientIdentifier);
+	}
+
+	@Override
+	public void accept(MessageHandler messageHandler, Socket socket) {
+		messageHandler.handleMessage(this, socket);
 	}
 
 

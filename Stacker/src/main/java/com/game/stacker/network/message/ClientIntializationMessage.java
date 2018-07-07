@@ -1,6 +1,9 @@
-package com.game.stacker.network;
+package com.game.stacker.network.message;
 
+import java.net.Socket;
 import java.util.Set;
+
+import com.game.stacker.network.Gamer;
 
 public class ClientIntializationMessage implements Message{
 
@@ -22,6 +25,11 @@ public class ClientIntializationMessage implements Message{
 
 	public Set<Gamer> getGamers() {
 		return gamers;
+	}
+
+	@Override
+	public void accept(MessageHandler messageHandler, Socket socket) {
+		messageHandler.handleMessage(this, socket);
 	}
 	
 

@@ -1,4 +1,7 @@
-package com.game.stacker.network;
+package com.game.stacker.network.message;
+
+import java.io.IOException;
+import java.net.Socket;
 
 import com.game.stacker.state.GameState;
 
@@ -34,6 +37,11 @@ public class ConnectMessage implements Message {
 
 	public GameState getGameState() {
 		return gameState;
+	}
+
+	@Override
+	public void accept(MessageHandler messageHandler, Socket socket) throws IOException {
+		messageHandler.handleMessage(this, socket);
 	}
 	
 }

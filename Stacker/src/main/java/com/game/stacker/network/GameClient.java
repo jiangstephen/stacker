@@ -12,6 +12,10 @@ import java.util.UUID;
 
 import com.game.stacker.Stacker;
 import com.game.stacker.StackerGame;
+import com.game.stacker.network.message.ConnectMessage;
+import com.game.stacker.network.message.Message;
+import com.game.stacker.network.message.MessageHandler;
+import com.game.stacker.network.message.MessageHandlerForClient;
 import com.game.stacker.state.GameState;
 import com.game.stacker.state.GameStateRecorder;
 
@@ -23,9 +27,12 @@ public class GameClient {
 	
 	private final String clientIdentifier;
 	
+	private final MessageHandler messageHandler;
+	
 	
 	public GameClient(String gamer) {
 		this.clientIdentifier = UUID.randomUUID().toString();
+		this.messageHandler = new MessageHandlerForClient(stackersByName, clientIdentifier);
 		try {
 			
 			this.clientSocket = new Socket("localhost", 48019);
@@ -50,40 +57,7 @@ public class GameClient {
 						ObjectInputStream ois = new ObjectInputStream(input);
 						Message message = (Message)ois.readObject();
 						System.out.println("Received a message from server " + message );
-						if(message instanceof ClientIntializationMessage){
-							ClientIntializationMessage clientInitMessage = (ClientIntializationMessage)message;
-							for(Gamer gamer: clientInitMessage.getGamers()){
-								if(clientIdentifier.equals(gamer.getClientIdentifier())){
-									System.out.println("Ignore myself from the ClientIntializationMessage");
-								} else {
-									Stacker otherStacker = new GameStateRecorder().restoreGame(gamer.getGameState(), true);
-									stackersByName.put(gamer.getClientIdentifier(), otherStacker);
-									StackerGame.getInstance().addStacker(otherStacker);
-									otherStacker.start();
-								}
-							}
-						}
-						if(message.getClientIdentifier().equals(clientIdentifier)){
-							System.out.println("This message is originated from myself,  ignore");
-							continue; 
-						}
-						if(message instanceof LeaveGameMessage){
-							Stacker stackerToRemove = stackersByName.remove(message.getClientIdentifier());
-							StackerGame.getInstance().removeStacker(stackerToRemove);
-						}
-						if(message instanceof ConnectMessage){
-							ConnectMessage connectMessage = (ConnectMessage)message;
-							Stacker otherStacker = new GameStateRecorder().restoreGame(connectMessage.getGameState(), true);
-							stackersByName.put(connectMessage.getClientIdentifier(), otherStacker);
-							StackerGame.getInstance().addStacker(otherStacker);
-							StackerGame.getInstance().pack();
-							otherStacker.start();
-						}
-						if(message instanceof ActionMessage){
-							ActionMessage actionMessage = (ActionMessage)message;
-							stackersByName.get(message.getClientIdentifier()).restoreGame(actionMessage.getGameState(), true);
-						}
-
+						message.accept(messageHandler, clientSocket);
 					} catch (Exception e) {
 						throw new RuntimeException("Unable to accept the message from server, client exit " , e);
 					}

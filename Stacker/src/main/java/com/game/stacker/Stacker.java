@@ -11,8 +11,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-import com.game.stacker.network.ActionMessage;
 import com.game.stacker.network.GameClient;
+import com.game.stacker.network.message.ActionMessage;
 import com.game.stacker.state.BlockStatus;
 import com.game.stacker.state.GameState;
 import com.game.stacker.state.GameStateRecorder;

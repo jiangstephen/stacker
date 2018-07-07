@@ -9,7 +9,6 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 import javax.swing.JFrame;
@@ -17,6 +16,11 @@ import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
+
+import com.game.stacker.network.message.LeaveGameMessage;
+import com.game.stacker.network.message.Message;
+import com.game.stacker.network.message.MessageHandler;
+import com.game.stacker.network.message.MessageHandlerForServer;
 
 public class GameServer extends JFrame {
 
@@ -27,12 +31,15 @@ public class GameServer extends JFrame {
 	private final ServerSocket serverSocket;
 
 	private Map<Socket, Gamer> gamersBySocket = new HashMap<>();
+	
+	private final MessageHandler messageHandler;
 
 	JTextArea textArea = new JTextArea();
 	
 	JScrollPane scrollPanel = new JScrollPane(textArea);  
 
 	public GameServer() throws IOException {
+		messageHandler = new MessageHandlerForServer(gamersBySocket);
 		scrollPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		JScrollBar vertical = scrollPanel.getVerticalScrollBar();
 		vertical.setValue( vertical.getMaximum() );
@@ -84,20 +91,10 @@ public class GameServer extends JFrame {
 						ObjectInputStream ois = new ObjectInputStream(input);
 						Message message = (Message) ois.readObject();
 						appendMessage("Received the message " + message + " from client, and start broadcasting");
-						if(message instanceof ConnectMessage){
-							ConnectMessage connectMessage = (ConnectMessage)message;
-							gamersBySocket.put(socket, new Gamer(connectMessage.getClientIdentifier(), socket, connectMessage.getGamer(), connectMessage.getGameState()));
-							Message clientInitializationMessage = new ClientIntializationMessage(connectMessage.getClientIdentifier(), new HashSet<>(gamersBySocket.values()));
-							new ObjectOutputStream(socket.getOutputStream()).writeObject(clientInitializationMessage);
-						}
-						//broadcast to all gamers
-						if(message instanceof ActionMessage){
-							ActionMessage actionMessage = (ActionMessage)message;
-							gamersBySocket.get(socket).setGameState(actionMessage.getGameState());
-						}
+						message.accept(messageHandler, socket);
 						for (Gamer gamer : gamersBySocket.values()) {
 							new ObjectOutputStream(gamer.getSocket().getOutputStream()).writeObject(message);
-						}						
+						}
 					} catch (IOException|ClassNotFoundException e) {
 						Gamer gamer = gamersBySocket.get(socket);
 						appendMessage(gamer.getGamerName() + " has left the party");
