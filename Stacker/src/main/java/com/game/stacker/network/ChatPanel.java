@@ -11,11 +11,9 @@ import java.awt.event.KeyListener;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.border.Border;
 
 import com.game.stacker.Stacker;
 import com.game.stacker.StackerGame;
@@ -32,11 +30,8 @@ public class ChatPanel extends JPanel{
 	private BorderLayout sendLayout;
 	private JPanel sendMessagePanel;
 	private JScrollPane scrollPane;
-	private final Stacker stacker;
-	
 	
 	public ChatPanel(final Stacker stacker) {
-		this.stacker = stacker;
 		messageBox = new JTextArea();
 		messageBox.setEditable(false);
 		messageBox.setPreferredSize(new Dimension(300, 200));

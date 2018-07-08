@@ -1,6 +1,7 @@
 package com.game.stacker;
 
 import java.awt.Color;
+
 import javax.swing.JPanel;
 
 public class Block extends JPanel {

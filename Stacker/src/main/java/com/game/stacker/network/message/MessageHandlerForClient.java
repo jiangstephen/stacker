@@ -6,7 +6,6 @@ import java.util.Map;
 
 import com.game.stacker.Stacker;
 import com.game.stacker.StackerGame;
-import com.game.stacker.network.ChatPanel;
 import com.game.stacker.network.Gamer;
 import com.game.stacker.state.GameStateRecorder;
 

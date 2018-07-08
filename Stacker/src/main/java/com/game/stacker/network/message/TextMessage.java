@@ -3,8 +3,6 @@ package com.game.stacker.network.message;
 import java.io.IOException;
 import java.net.Socket;
 
-import com.game.stacker.state.GameState;
-
 public class TextMessage implements Message{
 
 	private static final long serialVersionUID = 1L;
