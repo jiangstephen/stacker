@@ -40,4 +40,10 @@ public class MessageHandlerForServer implements MessageHandler {
 		
 	}
 
+	@Override
+	public void handleMessage(TextMessage textMessage, Socket socket) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

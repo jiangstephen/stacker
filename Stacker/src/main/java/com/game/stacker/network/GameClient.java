@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.swing.JOptionPane;
+
 import com.game.stacker.Stacker;
 import com.game.stacker.StackerGame;
 import com.game.stacker.network.message.ConnectMessage;
@@ -39,6 +41,10 @@ public class GameClient {
 			GameState gameState = new GameStateRecorder().saveGame(StackerGame.getInstance().getMainStacker());
 			sentMessage(new ConnectMessage(gamer, clientIdentifier, gameState));
 		} catch(Exception e){
+			
+			JOptionPane.showConfirmDialog(StackerGame.getInstance(), "There is no server", "Error", 
+		            JOptionPane.CLOSED_OPTION);
+			
 			throw new RuntimeException("Unable to start a new game client ", e);
 		}
 	}

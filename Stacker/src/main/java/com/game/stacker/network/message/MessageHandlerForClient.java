@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.game.stacker.Stacker;
 import com.game.stacker.StackerGame;
+import com.game.stacker.network.ChatPanel;
 import com.game.stacker.network.Gamer;
 import com.game.stacker.state.GameStateRecorder;
 
@@ -15,7 +16,8 @@ public class MessageHandlerForClient implements MessageHandler{
 	
 	private final String clientIdentifier;
 	
-	public MessageHandlerForClient(Map<String, Stacker> stackersByName, String clientIdentifier){
+	
+	public MessageHandlerForClient(Map<String, Stacker> stackersByName, String clientIdentifier ){
 		this.stackersByName = stackersByName;
 		this.clientIdentifier = clientIdentifier;
 	}
@@ -69,6 +71,14 @@ public class MessageHandlerForClient implements MessageHandler{
 	
 	private boolean isSelfMessageOriginated(Message message){
 		return clientIdentifier.equals(message.getClientIdentifier());
+	}
+
+
+	@Override
+	public void handleMessage(TextMessage textMessage, Socket socket) {
+		String message = textMessage.getGamer() +" : " + textMessage.getMessage();
+		StackerGame.getInstance().getChatPanel().appendMessage(message);
+		
 	}
 
 }

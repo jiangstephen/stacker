@@ -36,14 +36,14 @@ public class GameServer extends JFrame {
 
 	JTextArea textArea = new JTextArea();
 	
-	JScrollPane scrollPanel = new JScrollPane(textArea);  
+	JScrollPane scrollPane = new JScrollPane(textArea);  
 
 	public GameServer() throws IOException {
 		messageHandler = new MessageHandlerForServer(gamersBySocket);
-		scrollPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		JScrollBar vertical = scrollPanel.getVerticalScrollBar();
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		JScrollBar vertical = scrollPane.getVerticalScrollBar();
 		vertical.setValue( vertical.getMaximum() );
-		this.getContentPane().add(scrollPanel);
+		this.getContentPane().add(scrollPane);
 		serverSocket = new ServerSocket(SERVER_PORT);
 		appendMessage("The server is listening on the port " + SERVER_PORT);
 		textArea.setBackground(Color.BLACK);

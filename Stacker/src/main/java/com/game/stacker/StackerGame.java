@@ -1,5 +1,6 @@
 package com.game.stacker;
 
+import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -7,9 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+
+import com.game.stacker.network.ChatPanel;
+import com.game.stacker.network.GameClient;
 
 
 public class StackerGame extends javax.swing.JFrame implements KeyListener {
@@ -18,14 +21,19 @@ public class StackerGame extends javax.swing.JFrame implements KeyListener {
 	
 	private JPanel mainPanel = new JPanel();
 	
-	GridLayout layout = new GridLayout(1, 3);
+	private JPanel stackerPanel = new JPanel();
+	
+	private BorderLayout mainLayout = new BorderLayout();
+	
+	private GridLayout stackerLayout = new GridLayout(1, 3);
 	
 	private List<Stacker> stackers = new ArrayList<Stacker>();
 	
 	private Stacker mainStacker;
 	
-	private ControlPanel controlPanel;
+	private ControlMenu controlMenu;
 	
+	private ChatPanel chatPanel;
 
 	private static StackerGame instance;
 	
@@ -33,7 +41,7 @@ public class StackerGame extends javax.swing.JFrame implements KeyListener {
 	private StackerGame(String name) {
 		super(name);
 		setResizable(false);
-		mainPanel.setLayout(layout);
+		stackerPanel.setLayout(stackerLayout);
 	}
 	
 	public synchronized static StackerGame getInstance(){
@@ -44,34 +52,36 @@ public class StackerGame extends javax.swing.JFrame implements KeyListener {
 	}
 	
 
-	private void createAndShowGUI(String userName) {
+	private void initialize(String userName) {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.mainPanel.setLayout(mainLayout);
 		this.getContentPane().add(mainPanel);
-		
+		this.mainPanel.add(stackerPanel, BorderLayout.NORTH);
 		this.mainStacker = new Stacker(userName, 32, false);
 		this.addStacker(mainStacker); //space
-		this.controlPanel = new ControlPanel(mainStacker);
-		this.setJMenuBar(controlPanel);
+		this.chatPanel = new ChatPanel(mainStacker);
+		this.mainPanel.add(chatPanel, BorderLayout.SOUTH);
+		this.controlMenu = new ControlMenu(mainStacker);
+		this.setJMenuBar(controlMenu);
 		this.pack();
 		this.setVisible(true);
 		this.setFocusable(true);
 		this.setFocusTraversalKeysEnabled(false);
-		this.addKeyListener(this);
-		this.requestFocus();
-		new Thread(new MainWindowFocus(this)).start();
+		mainStacker.addKeyListener(this);
+		mainStacker.requestFocus();
 	}
 	
 	public void addStacker(Stacker stacker){
 		this.stackers.add(stacker);
-		mainPanel.add(stacker);
+		stackerPanel.add(stacker);
 		this.pack();
 	}
 	
 	
 	public void removeStacker(Stacker stacker){
-		mainPanel.remove(stacker);
-		mainPanel.revalidate();
-		mainPanel.repaint();
+		stackerPanel.remove(stacker);
+		stackerPanel.revalidate();
+		stackerPanel.repaint();
 		this.pack();
 	}
 
@@ -85,6 +95,9 @@ public class StackerGame extends javax.swing.JFrame implements KeyListener {
 	@Override
 	public void keyPressed(KeyEvent e) {
 		System.out.println("Key inputed : " + e.getKeyCode());
+		if (e.getKeyCode() == 9){
+			chatPanel.startChat();
+		}
 		for(Stacker stacker : stackers){
 			if(e.getKeyCode() == stacker.getNextLevelKey()){
 				if(stacker.getStatus() == Status.RUNNING || stacker.getStatus() == Status.READY){
@@ -106,33 +119,18 @@ public class StackerGame extends javax.swing.JFrame implements KeyListener {
 	}
 	
 	
-
-	public ControlPanel getControlPanel() {
-		return controlPanel;
+	public ChatPanel getChatPanel() {
+		return chatPanel;
 	}
 
-
-
-	private class MainWindowFocus implements Runnable {
-		
-		private StackerGame game;
-		
-		public MainWindowFocus(StackerGame game){
-			this.game = game;
-		}
-
-		@Override
-		public void run() {
-			while(true){
-				game.requestFocus();
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					throw new RuntimeException("unable to sleep the thread for 100ms");
-				}
-			}
-		}
+	public ControlMenu getControlPanel() {
+		return controlMenu;
 	}
+	
+	public GameClient getGameClient(){
+		return this.mainStacker.getGameClient();
+	}
+
 	
 	/**
 	 * @param args
@@ -143,10 +141,7 @@ public class StackerGame extends javax.swing.JFrame implements KeyListener {
 		Scanner scanner = new Scanner(System.in);
 		String username = scanner.nextLine();
 		System.out.println("You are playing as " + username);
-		StackerGame.getInstance().createAndShowGUI(username);
-		
+		StackerGame.getInstance().initialize(username);
 	}
-
-
 
 }

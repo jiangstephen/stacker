@@ -14,37 +14,55 @@ import javax.swing.JMenuItem;
 import com.game.stacker.state.GameState;
 import com.game.stacker.state.GameStateRecorder;
 
-public class ControlPanel extends JMenuBar {
+public class ControlMenu extends JMenuBar {
 
 	private static final long serialVersionUID = 1L;
 
-	private JMenuItem buttonStart, buttonJoinServer, buttonPause, buttonResume, buttonSave, buttonRestore;
+	private JMenuItem buttonSave, buttonRestore;
+	private JMenuItem buttonStart, buttonPause, buttonResume;
+	
+	private JMenuItem buttonJoinServer, buttonLeaveServer;
+	
+	JMenu fileMenu = new JMenu("File");
 	
 	JMenu actionMenu = new JMenu("Action");
 	
+	JMenu serverMenu = new JMenu("Server");
+	
 	private Stacker  stacker;
 	
-	public ControlPanel(Stacker stacker){
+	public ControlMenu(Stacker stacker){
 		this.stacker = stacker;
 		this.initialize();
 	}
 
 	public void initialize() {
-		
-		buttonStart = new JMenuItem("Start");
-		buttonJoinServer = new JMenuItem("Join Server");
-		buttonPause = new JMenuItem("Pause");
-		buttonResume = new JMenuItem("Resume");
 		buttonSave = new JMenuItem("Save");
 		buttonRestore = new JMenuItem("Restore");
+		
+		buttonStart = new JMenuItem("Start");
+		buttonPause = new JMenuItem("Pause");
+		buttonResume = new JMenuItem("Resume");
+		
+		buttonLeaveServer = new JMenuItem("Leave Server");
+		buttonJoinServer = new JMenuItem("Join Server");
+
+		this.add(fileMenu);
 		this.add(actionMenu);
+		this.add(serverMenu);
+
+		fileMenu.add(buttonSave);
+		fileMenu.add(buttonRestore);
+		
 		actionMenu.add(buttonStart);
-		actionMenu.add(buttonJoinServer);
 		actionMenu.add(buttonPause);
 		actionMenu.add(buttonResume);
-		actionMenu.add(buttonSave);
-		actionMenu.add(buttonRestore);
+		
+		serverMenu.add(buttonJoinServer);
+		serverMenu.add(buttonLeaveServer);
+
 		buttonJoinServer.setEnabled(false);
+		buttonLeaveServer.setEnabled(false);
 		buttonPause.setEnabled(false);
 		buttonResume.setEnabled(false);
 
@@ -63,6 +81,7 @@ public class ControlPanel extends JMenuBar {
 			public void actionPerformed(ActionEvent e) {
 				stacker.joinServer();
 				buttonJoinServer.setEnabled(false);
+				buttonLeaveServer.setEnabled(true);
 			}
 		});
 		// pause the game
@@ -117,7 +136,7 @@ public class ControlPanel extends JMenuBar {
 					restoredStacker.setGameState(gameState);
 					stacker = restoredStacker;
 				} catch (Exception e1) {
-					throw new RuntimeException("Unable to save the game", e1);
+					throw new RuntimeException("Unable to restore the game", e1);
 				} 
 			}
 		});

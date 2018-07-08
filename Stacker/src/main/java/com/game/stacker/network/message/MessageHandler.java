@@ -13,6 +13,6 @@ public interface MessageHandler {
 
 	void handleMessage(LeaveGameMessage leaveGameMessage, Socket socket);
 	
-	
+	void handleMessage(TextMessage textMessage, Socket socket);
 
 }

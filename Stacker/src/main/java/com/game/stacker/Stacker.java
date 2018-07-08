@@ -201,6 +201,10 @@ public class Stacker extends javax.swing.JPanel {
 	public void setGameState(GameState gameState) {
 		this.gameState = gameState;
 	}
+
+	public GameClient getGameClient() {
+		return gameClient;
+	}
 	
 	
 }
