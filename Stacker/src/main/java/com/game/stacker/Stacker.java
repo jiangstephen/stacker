@@ -16,7 +16,6 @@ import com.game.stacker.network.message.ActionMessage;
 import com.game.stacker.state.BlockStatus;
 import com.game.stacker.state.GameState;
 import com.game.stacker.state.GameStateRecorder;
-import com.game.stacker.state.StatsWriter;
 
 public class Stacker extends javax.swing.JPanel {
 	
@@ -28,7 +27,6 @@ public class Stacker extends javax.swing.JPanel {
 	GridLayout layout = new GridLayout(PLATFORM_LEVEL, PLATFORM_WIDTH);
 	final Block[][] blocks = new Block[PLATFORM_LEVEL][PLATFORM_WIDTH];
 	final JPanel mainPanel = new JPanel();
-	final StatsWriter stats = new StatsWriter(); 
 	private MovingBlocks movingBlocks;
 	private String gamer;
 	private int nextLevelKey;
@@ -95,11 +93,6 @@ public class Stacker extends javax.swing.JPanel {
 	}
 	
 	private void endGame(Status status) {
-		if (status.equals(Status.WIN)){
-			stats.addWin();
-		} else {
-			stats.addLoss();
-		}
 		StackerGame.getInstance().getControlPanel().resetStartButton();
 		
 	}
